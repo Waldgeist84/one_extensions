@@ -74,6 +74,7 @@ public class DTNHost implements Comparable<DTNHost> {
 		// create instances by replicating the prototypes
 		this.movement = mmProto.replicate();
 		this.movement.setComBus(comBus);
+		this.movement.setHost(this);
 		setRouter(mRouterProto.replicate());
 
 		this.location = movement.getInitialLocation();
@@ -499,6 +500,28 @@ public class DTNHost implements Comparable<DTNHost> {
 	 */
 	public int compareTo(DTNHost h) {
 		return this.getAddress() - h.getAddress();
+	}
+	
+	/**
+	 * Required for RAPID Routing 
+	 */
+	public MovementModel getMovementModel() {
+		return this.movement;
+	}
+	
+	/**
+	 * !IMPORTANT NOTE!
+	 * 
+	 * The function CopyMovementmodel is not part of the original DTNHost implementation!
+	 * 
+	 * it has been added for use of ContextualMovement
+	 * if ContextualMovement is not used it can be deleted or uncommented
+	 * 
+	 * @return Copy of Hosts MovementModel
+	 */
+	
+	public MovementModel CopyMovementmodel() {
+		return movement.replicate();
 	}
 
 }
