@@ -39,6 +39,9 @@ public class RapidRouter extends ActiveRouter {
 	private final UtilityAlgorithm ALGORITHM = UtilityAlgorithm.AVERAGE_DELAY;
 	private static final double INFINITY = 99999;
 	
+	// interval to verify ongoing connections in seconds
+	private static final double UTILITY_INTERAL = 100.0;
+	
 	/**
 	 * Constructor. Creates a new message router based on the settings in
 	 * the given Settings object.
@@ -109,6 +112,62 @@ public class RapidRouter extends ActiveRouter {
 			
 			//synchronize all delay table entries
 			synchronizeDelayTables(con);
+		}
+	}
+	
+	
+	public void ckeckConnectionStatus() {	
+		
+		DTNHost host = getHost();
+		int from = host.getAddress();
+		double checkPeriod = 0.0;		
+				
+		for (Connection con : getConnections()) {
+			DTNHost other = con.getOtherNode(host);
+			int to = other.getAddress();
+			RapidRouter otherRouter = (RapidRouter) other.getRouter();
+			MeetingEntry entry = otherRouter.getDelayTable().getMeetingEntry(from, to);
+			checkPeriod = SimClock.getTime() - UTILITY_INTERAL;
+
+			if (con.isUp() && entry.isOlderThan(checkPeriod)){
+				// simulate artificial break 
+				//update connection
+				double time = (SimClock.getTime()-0.1)-timestamp;
+				delayTable.updateConnection(con, time);
+			
+				//synchronize acked message ids
+				synchronizeAckedMessageIDs(con);
+			
+				//update set of messages that are known to have reached the destination 
+				deleteAckedMessages();
+				updateAckedMessageIds();
+			
+				//synchronize all delay table entries
+				synchronizeDelayTables(con);
+				
+				
+				// simulate artificial make
+				//simulate control channel on connection up without sending any data
+				timestamp = SimClock.getTime();	
+			
+				//synchronize all delay table entries
+				synchronizeDelayTables(con);
+			
+				//synchronize all meeting time entries 
+				synchronizeMeetingTimes(con);
+			
+				updateDelayTableStat(con);
+			
+				//synchronize acked message ids
+				synchronizeAckedMessageIDs(con);
+				
+				deleteAckedMessages();	
+			
+				//map DTNHost to their address
+				doHostMapping(con);
+			
+				delayTable.dummyUpdateConnection(con);
+			}
 		}
 	}
 	
@@ -551,6 +610,9 @@ public class RapidRouter extends ActiveRouter {
 	@Override
 	public void update() {
 		super.update();
+		
+		ckeckConnectionStatus();
+		
 		if (isTransferring() || !canStartTransfer()) {
 			return; 
 		}
