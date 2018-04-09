@@ -1,0 +1,140 @@
+
+## Scenario settings
+Scenario.name = back10_var2_step500_rapid_scenario
+Scenario.simulateConnections = false
+Scenario.updateInterval = 0.1
+Scenario.endTime = 12000
+
+
+## Interface-specific settings:
+# type : which interface class the interface belongs to
+# For different types, the sub-parameters are interface-specific
+# For SimpleBroadcastInterface, the parameters are:
+# transmitSpeed : transmit speed of the interface (bytes per second) 
+# transmitRange : range of the interface (meters)
+
+#btInterface.type = InterferenceLimitedInterface
+btInterface.type = SimpleBroadcastInterface
+#2Mbps 
+btInterface.transmitSpeed = 250k
+# 2 Mbps
+btInterface.transmitRange = 150
+
+
+# Define 6 different node groups
+Scenario.nrofHostGroups = 17
+
+## Group-specific settings:
+
+
+# Common settings for all groups
+Group.movementModel = StationaryMovement
+Group.nodeLocation = 0,1
+Group.router = RapidRouter
+Group.bufferSize = 10M
+Group.waitTime = 0, 120
+# All nodes have the same interface
+Group.nrofInterfaces = 1
+Group.interface1 = btInterface
+# Message TTL of 300 minutes (5 hours)
+Group.msgTtl = 300
+Group.nrofHosts = 2
+
+
+# group specific settings - vehicles
+Group1.groupID = v
+Group1.nrofHosts = 8
+
+# group specific settings - firefighter
+Group2.groupID = ff_1
+Group2.nrofHosts = 1
+
+# group specific settings - firefighter
+Group3.groupID = ff_2
+Group3.nrofHosts = 2
+
+# group specific settings - firefighter
+Group4.groupID = ff_3
+Group4.nrofHosts = 2
+
+# group specific settings - firefighter
+Group5.groupID = ff_4
+Group5.nrofHosts = 1
+
+# group specific settings - firefighter
+Group6.groupID = ff_5
+Group6.nrofHosts = 6
+
+# group specific settings - firefighter
+Group7.groupID = ff_6
+Group7.nrofHosts = 1
+
+# group specific settings - firefighter
+Group8.groupID = ff_7
+Group8.nrofHosts = 6
+
+# group specific settings - firefighter
+Group9.groupID = ff_8
+Group9.nrofHosts = 2
+
+# group specific settings - firefighter
+Group10.groupID = ff_9
+Group10.nrofHosts = 2
+
+# group specific settings - firefighter
+Group11.groupID = ff_10
+Group11.nrofHosts = 1
+
+# group specific settings - firefighter
+Group12.groupID = ff_11
+Group12.nrofHosts = 1
+
+# group specific settings - firefighter
+Group13.groupID = ff_12
+Group13.nrofHosts = 4
+
+# group specific settings - dogs
+Group14.groupID = d
+Group14.nrofHosts = 21
+
+# group specific settings - police
+Group15.groupID = p
+Group15.nrofHosts = 2
+
+# group specific settings - ems
+Group16.groupID = e
+Group16.nrofHosts = 2
+
+# group specific settings - fixed backbone
+Group17.groupID = b
+Group17.nrofHosts = 10
+
+
+
+# How many event generators
+Events.nrof = 2
+
+# Message Events
+Events1.class = ExternalEventsQueue
+Events1.nrofPreload = 500
+Events1.filePath = ee/sar_events.txt
+
+# Movement Events -> external trace (recorded by ONE, OMNeT, or experimentally)
+Events2.class = StandardEventsReader
+Events2.nrofPreload = 500
+Events2.filePath = data/sar/trace_back10_var2_step500.txt
+
+
+
+## Movement model settings
+MovementModel.worldSize = 6500, 5900
+
+
+
+## Reports - all report names have to be valid report classes
+# how many reports to load
+Report.nrofReports = 1
+Report.warmup = 0
+Report.reportDir = reports/
+
+Report.report1 = DeliveredMessagesReport
